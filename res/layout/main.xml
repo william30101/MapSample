@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?> <!-- XML的版本以及編碼方式 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" > <!-- 定義一個線性佈局 -->
+
+    <wyf.ytl.GameView
+        android:id="@+id/gameView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" /> <!-- 新增自己實作的View -->
+
+    <AbsoluteLayout
+        android:id="@+id/AbsoluteLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@+id/gameView"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="131dp" >
+
+        <Button
+            android:id="@+id/go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="909dp"
+            android:layout_y="-2dp"
+            android:text="Start" />
+
+        <TextView
+            android:id="@+id/changdu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="670dp"
+            android:layout_y="6dp"
+            android:text="Path:" />
+
+        <TextView
+            android:id="@+id/bushu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="721dp"
+            android:layout_y="10dp"
+            android:text="Step:" />
+
+        <Spinner
+            android:id="@+id/target"
+            android:layout_width="161dp"
+            android:layout_height="53dp"
+            android:layout_x="792dp"
+            android:layout_y="46dp" />
+
+        <Spinner
+            android:id="@+id/mySpinner"
+            android:layout_width="150px"
+            android:layout_height="45dp"
+            android:layout_x="793dp"
+            android:layout_y="1dp" />
+    </AbsoluteLayout>
+
+</RelativeLayout>
