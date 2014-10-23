@@ -42,7 +42,8 @@ public class Game {//�t��k���O
         		goButton.setEnabled(true);
         	}
         	else if(msg.what == 2){//���ܨB�ƪ�TextView����
-        		BSTextView.setText("�ϥΨB�ơG" + (Integer)msg.obj);
+        		BSTextView.setText("" +
+        				"Count= " + (Integer)msg.obj);
         	}
         }
 	};
@@ -194,6 +195,7 @@ public class Game {//�t��k���O
 				myHandler.sendMessage(msg1);//�]�w���s���i�Ω�
 				Message msg2 = myHandler.obtainMessage(2, count);
 				myHandler.sendMessage(msg2);//����TextView��r
+				
 			}
 		}.start();				
 	}

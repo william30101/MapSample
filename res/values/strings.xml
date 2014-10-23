@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, Sample_8_1!</string>
-    <string name="app_name">Sample_8_1</string>
+    <string name="app_name">SmartHomeRobot_MappingTest</string>
 </resources>

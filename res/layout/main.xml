@@ -16,47 +16,161 @@
         android:id="@+id/AbsoluteLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_alignBottom="@+id/gameView"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="131dp" >
-
-        <Button
-            android:id="@+id/go"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_x="909dp"
-            android:layout_y="-2dp"
-            android:text="Start" />
+        android:layout_alignParentTop="true" >
 
         <TextView
             android:id="@+id/changdu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_x="670dp"
-            android:layout_y="6dp"
+            android:layout_x="548dp"
+            android:layout_y="11dp"
             android:text="Path:" />
 
         <TextView
             android:id="@+id/bushu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_x="721dp"
-            android:layout_y="10dp"
+            android:layout_x="608dp"
+            android:layout_y="12dp"
             android:text="Step:" />
 
-        <Spinner
-            android:id="@+id/target"
-            android:layout_width="161dp"
-            android:layout_height="53dp"
-            android:layout_x="792dp"
-            android:layout_y="46dp" />
+        <ImageButton
+            android:id="@+id/bacRig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="657dp"
+            android:layout_y="330dp"
+            android:src="@drawable/backrig" />
+
+        <ImageButton
+            android:id="@+id/right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="659dp"
+            android:layout_y="256dp"
+            android:src="@drawable/right" />
+
+        <ImageButton
+            android:id="@+id/stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="588dp"
+            android:layout_y="257dp"
+            android:src="@drawable/stop" />
+
+        <ImageButton
+            android:id="@+id/backward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="589dp"
+            android:layout_y="329dp"
+            android:src="@drawable/back" />
+
+        <ImageButton
+            android:id="@+id/bacLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="519dp"
+            android:layout_y="330dp"
+            android:src="@drawable/backleft" />
+
+        <ImageButton
+            android:id="@+id/left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="517dp"
+            android:layout_y="256dp"
+            android:src="@drawable/left" />
+
+        <ImageButton
+            android:id="@+id/forward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="593dp"
+            android:layout_y="185dp"
+            android:src="@drawable/forward" />
+
+        <ImageButton
+            android:id="@+id/forLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:layout_marginRight="54dp"
+            android:layout_x="520dp"
+            android:layout_y="183dp"
+            android:src="@drawable/fordleft" />
+
+        <ImageButton
+            android:id="@+id/forRig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="670dp"
+            android:layout_y="185dp"
+            android:src="@drawable/forrig" />
 
         <Spinner
             android:id="@+id/mySpinner"
             android:layout_width="150px"
             android:layout_height="45dp"
-            android:layout_x="793dp"
-            android:layout_y="1dp" />
+            android:layout_x="556dp"
+            android:layout_y="42dp" />
+
+        <Spinner
+            android:id="@+id/target"
+            android:layout_width="161dp"
+            android:layout_height="53dp"
+            android:layout_x="563dp"
+            android:layout_y="105dp" />
+
+        <Button
+            android:id="@+id/go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="716dp"
+            android:layout_y="9dp"
+            android:text="Start" />
+
+        <Button
+            android:id="@+id/jamesSignBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="728dp"
+            android:layout_y="59dp"
+            android:text="jamesSign" />
+
+        <Button
+            android:id="@+id/williamSignBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="727dp"
+            android:layout_y="109dp"
+            android:text="williamSign" />
+
+        <Button
+            android:id="@+id/saveBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="744dp"
+            android:layout_y="161dp"
+            android:text="Save" />
+
+        <Button
+            android:id="@+id/sixForwareBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="443dp"
+            android:layout_y="373dp"
+            android:text="SixF" />
+
+        <Button
+            android:id="@+id/runBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="747dp"
+            android:layout_y="211dp"
+            android:text="Run" />
+
     </AbsoluteLayout>
 
 </RelativeLayout>
