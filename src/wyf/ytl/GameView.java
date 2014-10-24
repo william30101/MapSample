@@ -34,7 +34,7 @@ public class GameView extends View{
 	GameView GV;
 	Spinner mySpinner;// Spinner���ޥ�
 	TextView CDTextView;
-	int span = 13;
+	int span = 25;
 	int theta = 0;
 	public boolean drawCircleFlag=false;
 	private boolean drawLastCircle= false;
@@ -54,11 +54,16 @@ public class GameView extends View{
     String inStr2 = "test2";
     int fixMapData = 5;
     int gridX = 0 , gridY = 0;
-    
+    int row = 0;
+	int col = 0;
+	
     public static int drawCount = 0; // For drawcircle position
     
     
     double rX = 0 , rY = 0;
+    int[][] map;
+    int[] old_pos;
+    MapList maplist = new MapList();
     
     public boolean flag = false , flagR = false , doubleCmd = false , algorithmDone = false;
     private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
@@ -161,9 +166,9 @@ public class GameView extends View{
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
 		canvas.drawRect(5, 55, 325, 376, paint);
-		int[][] map = game.map;
-		int row = map.length;
-		int col = map[0].length;
+		map = game.map;
+		row = map.length;
+		col = map[0].length;
 		for(int i=0; i<row; i++){
 			for(int j=0; j<col; j++){
 				if(map[i][j] == 0){							
@@ -291,23 +296,30 @@ public class GameView extends View{
 		//Log.i("william","test");
 		
         if (event.getAction() == MotionEvent.ACTION_DOWN  ) {
-            touchX = (int)event.getX();
-            touchY = (int)event.getY();
-            tempwidth = touchX - x;
-            tempheight = touchY -y;
-            
+			touchX = (int) event.getX();
+			touchY = (int) event.getY();
+			tempwidth = touchX - x;
+			tempheight = touchY - y;
+
 			int i = 0, j = 0;
-			
-            int[] pos = getPos(event);//®Ú¾Ú®y¼Ð´«ºâ¦¨©Ò¦bªº¦æ©M¦C
+
+			int[] pos = getPosW(event);// ®Ú¾Ú®y¼Ð´«ºâ¦¨©Ò¦bªº¦æ©M¦C
 			i = pos[0];
 			j = pos[1];
-            
-            MapList.target[0][0] = i;
-            MapList.target[0][1] = j;
-           // XMPPSet.XMPPSendText("james1", "direction left");
-            //Map.target
-            chk = true;
-  
+
+			synchronized (MapList.target) {
+				try {
+					MapList.target[0][0] = i;
+					MapList.target[0][1] = j;
+					// XMPPSet.XMPPSendText("james1", "direction left");
+					// Map.target
+					chk = true;
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			}
         }
         else if (event.getAction() == MotionEvent.ACTION_UP) {
             chk = false;
@@ -332,6 +344,42 @@ public class GameView extends View{
 			pos[1] = -1;
 		}
 		return pos;//±N®y¼Ð°}¦Cªð¦^
+	}
+	
+	
+	public int[] getPosW(MotionEvent e){
+		int[] pos = new int[2];
+		double x = e.getX();
+		double y = e.getY();
+
+		
+		///////////////////////////////////////////////////////////////
+		// (col*(span+1)+fixMapData) = X total length                //
+		// (row*(span+1)+fixMapData) = Y total length                //
+		///////////////////////////////////////////////////////////////
+		
+		int xGridSize = (col*(span+1)+fixMapData) / col;
+		int yGridSize = (row*(span+1)+fixMapData) / row;
+
+		if (x > fixMapData && y > fixMapData
+				&& x < (col * (span + 1) + fixMapData)
+				&& y < (row * (span + 1) + fixMapData)) {
+
+			int xPos = (int) x / xGridSize;
+			int yPos = (int) y / yGridSize;
+			if (map[yPos][xPos] == 0) {
+				pos[0] = xPos;
+				pos[1] = yPos;
+			} else {
+				pos[0] = MapList.target[0][0];
+				pos[1] = MapList.target[0][1];
+			}
+		}
+		else{
+			pos[0] = MapList.target[0][0];
+			pos[1] = MapList.target[0][1];
+		}
+		return pos;
 	}
 	
 	public class ShowThread implements Runnable {

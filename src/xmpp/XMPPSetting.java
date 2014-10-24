@@ -118,7 +118,7 @@ public class XMPPSetting {
     	String Reci = to+"@james-pc/Smack";
         String text = istr;
 
-        //Log.i(TAG, "Sending text [" + text + "] to [" + Reci + "]");
+        Log.i(TAG, "Sending text [" + text + "] to [" + Reci + "]");
         Message msg = new Message(Reci, Message.Type.chat);
         msg.setBody(text);
         connection.sendPacket(msg);

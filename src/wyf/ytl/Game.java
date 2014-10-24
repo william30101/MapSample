@@ -11,7 +11,7 @@ import android.widget.TextView;//�ޤJ�������O
 public class Game {//�t��k���O
 	int algorithmId=0;//�t��k�N�� 0--�`���u��
 	int mapId = 0;//�a�Ͻs��
-	int[][] map = MapList.map[mapId];
+	int[][] map = MapList.customized_map2[mapId];
 	public int[] source = MapList.source;//�X�o�I
 	public int[] target = MapList.target[0];//�ؼ��I
 	GameView gameView;//gameView���ޥ�

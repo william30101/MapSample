@@ -12,7 +12,7 @@ public class SendCmdToBoardAlgorithm {
 
 	private String TAG = "william";
 	
-	private static XMPPSetting XMPPSet;
+	//private static XMPPSetting XMPPSet;
 	
 	int nextX = 0 , nextY = 0;
 	int originalX = 0, originalY = 0;
@@ -21,19 +21,25 @@ public class SendCmdToBoardAlgorithm {
 	ArrayList<int[][]> pathQ = new ArrayList<int[][]>();
 	//GameView gameView;
 	
-	public void SendCommand(String inString) {
+	public void SendCommand(XMPPSetting inXMPPSet,String inString) {
 		// TODO Auto-generated method stub
 		Log.i(TAG," Send command = " + inString);
 		
 		
 				if (inString.equals("left") || inString.equals("right")) {
-					for (int i = 0; i < 50; i++) {
+					for (int i = 0; i < 10; i++) {
 
-						synchronized (XMPPSet) {
+						synchronized (inXMPPSet) {
 						try {
-								XMPPSet.XMPPSendText("james1", "direction " + inString);
-								Thread.sleep(50);
+							inXMPPSet.XMPPSendText("james1", "direction " + inString);
+								
 						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						/*try {
@@ -44,12 +50,18 @@ public class SendCmdToBoardAlgorithm {
 						}*/
 						}
 					}
-					for (int i = 0; i < 50; i++) {
-						synchronized (XMPPSet) {
+					for (int i = 0; i < 10; i++) {
+						synchronized (inXMPPSet) {
 						try {
-								XMPPSet.XMPPSendText("james1", "direction " + "forward");
-								Thread.sleep(50);
+							inXMPPSet.XMPPSendText("james1", "direction " + "forward");
+								
 						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
 						/*try {
@@ -61,12 +73,18 @@ public class SendCmdToBoardAlgorithm {
 						}
 					}
 				} else {
-					for (int i = 0; i < 100; i++) {
-						synchronized (XMPPSet) {
+					for (int i = 0; i < 20; i++) {
+						synchronized (inXMPPSet) {
 							try {
-									XMPPSet.XMPPSendText("james1", "direction " + inString);
-									Thread.sleep(50);
+								inXMPPSet.XMPPSendText("james1", "direction " + inString);
+									
 							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 					
@@ -172,15 +190,15 @@ public class SendCmdToBoardAlgorithm {
 		return compass;
 	}
 	
-	public void RobotStart(final GameView gameView , final Game game , XMPPSetting inXMPPSet)
+	public void RobotStart(final GameView gameView , final Game game , final XMPPSetting inXMPPSet)
 	{
 		Log.i("william", "Robot thread running");
 
-		XMPPSet = inXMPPSet;
+		//XMPPSet = inXMPPSet;
 		
 		new Thread() {
 			public void run() {
-
+				
 				if (gameView.algorithmDone == true) { // When user press Start , path cal done
 					int old_dx , old_dy;
 					gameView.drawCircleFlag = true;
@@ -249,7 +267,7 @@ public class SendCmdToBoardAlgorithm {
 								" nextCompass = " + nextCompass + " \n theta = " + theta);
 						
 						String dir = FindDirection(theta);
-						SendCommand(dir);
+						SendCommand(inXMPPSet,dir);
 						
 					}
 					
