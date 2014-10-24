@@ -44,6 +44,8 @@ public class Sample_8_1 extends Activity {
 	
 	EditText nameText;
 	
+	
+	
 	private ArrayAdapter<String> adapter;
 	private ArrayAdapter<String> adapter2;
     public void onCreate(Bundle savedInstanceState) {

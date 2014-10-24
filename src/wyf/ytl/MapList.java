@@ -1,6 +1,6 @@
 package wyf.ytl;										//�ŧi�M��y�y
 public class MapList {									//�����O���a�����O
-	static int[] source={1,1};							//�X�o�I�y�� 
+	public static int[] source={1,1};							//�X�o�I�y�� 
 	static int[][] target={								//�ؼ��I�y�а}�C
 		{13,2},{4,22},{0,11},{9,10},{21,22}
 	};

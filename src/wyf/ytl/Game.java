@@ -12,8 +12,8 @@ public class Game {//�t��k���O
 	int algorithmId=0;//�t��k�N�� 0--�`���u��
 	int mapId = 0;//�a�Ͻs��
 	int[][] map = MapList.map[mapId];
-	int[] source = MapList.source;//�X�o�I
-	int[] target = MapList.target[0];//�ؼ��I
+	public int[] source = MapList.source;//�X�o�I
+	public int[] target = MapList.target[0];//�ؼ��I
 	GameView gameView;//gameView���ޥ�
 	Button goButton;//goButton���ޥ�
 	TextView BSTextView;//BSTextView���ޥ�
@@ -48,6 +48,8 @@ public class Game {//�t��k���O
         }
 	};
 	public void clearState(){//�M�ũҦ����A�P�M��
+		gameView.algorithmDone = false;
+		gameView.PathQueueClear();
 		pathFlag=false;	
 		searchProcess.clear();
 		stack.clear();

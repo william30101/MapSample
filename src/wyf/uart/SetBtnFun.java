@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import wyf.encoder.Encoder;
+import wyf.ytl.Game;
 import wyf.ytl.GameView;
 import wyf.ytl.NetworkStatus;
 import wyf.ytl.R;
@@ -31,7 +32,7 @@ import android.widget.ImageButton;
 
 public class SetBtnFun {
 
-	private String TAG = "App";
+	private String TAG = "william";
 	private boolean isNeedAdd = false ;
 	private boolean startR = false;
 	private XMPPSetting XMPPSet;
@@ -42,6 +43,8 @@ public class SetBtnFun {
 	File sdcard,file;
 	private int[] wnum;
 	GameView gameView;
+	Game game;
+	SendCmdToBoardAlgorithm SendAlgo;
 	
 	Button runBtn;
 	
@@ -58,6 +61,11 @@ public class SetBtnFun {
 		XMPPSet = new XMPPSetting();
 		
 		gameView = (GameView) v.findViewById(R.id.gameView);
+		
+		game = new Game();
+		
+		SendAlgo = new SendCmdToBoardAlgorithm();
+		
 		//uartRec = new UartReceive();
 		//uartRec.RunRecThread();
 		
@@ -91,8 +99,7 @@ public class SetBtnFun {
 
 
 	}
-	
-	
+
 	 private Button.OnClickListener onClickListener = new OnClickListener() {
 
 			int btnMsg;
@@ -104,21 +111,8 @@ public class SetBtnFun {
 
 				switch (btnMsg) {
 				case R.id.runBtn:
-					Log.i(TAG,"Start Robot Running");
-					//startR = (startR == true) ? false : true;
-					//if (startR == true)	
-					//	runBtn.setText("Stop");
-					//else
-					//	runBtn.setText("Run");
-					
-					//gameView.flagR = true;
-					//gameView.StartRobot(startR);
-					try {
-						gameView.RobotStart();
-					} catch (InterruptedException e3) {
-						// TODO Auto-generated catch block
-						e3.printStackTrace();
-					}
+						SendAlgo.RobotStart(gameView,game,XMPPSet);
+
 					break;
 				case R.id.sixForwareBtn:
 					Log.i(TAG,"Forward six");

@@ -31,11 +31,13 @@ public class GameView extends View{
 	private XMPPSetting XMPPSet = new XMPPSetting();;
  
 	Game game;
+	GameView GV;
 	Spinner mySpinner;// Spinner���ޥ�
 	TextView CDTextView;
 	int span = 13;
 	int theta = 0;
-	boolean drawCircleFlag=false , drawLastCircle= false;
+	public boolean drawCircleFlag=false;
+	private boolean drawLastCircle= false;
 
 	Bitmap source = BitmapFactory.decodeResource(getResources(), R.drawable.source);
 	Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.target)	;
@@ -53,10 +55,12 @@ public class GameView extends View{
     int fixMapData = 5;
     int gridX = 0 , gridY = 0;
     
+    public static int drawCount = 0; // For drawcircle position
+    
     
     double rX = 0 , rY = 0;
     
-    public boolean flag = false , flagR = false , over2Grid = false , doubleCmd = false;
+    public boolean flag = false , flagR = false , doubleCmd = false , algorithmDone = false;
     private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
     public static ShowThread st;
 	
@@ -66,7 +70,7 @@ public class GameView extends View{
     	[2] : Next position X
     	[3] : Next position Y
     */
-	ArrayList<int[][] > pathQueue = new ArrayList<int[][] >();
+	private ArrayList<int[][] > pathQueue = new ArrayList<int[][] >();
 	
 	Canvas gcanvas;
 	
@@ -74,6 +78,8 @@ public class GameView extends View{
         public void handleMessage(Message msg) {
         	if(msg.what == 1){
         		CDTextView.setText("Step" + (Integer)msg.obj);
+        		//game.pathFlag = false;
+        		algorithmDone = true;
         	}
         }
 	};	
@@ -123,91 +129,34 @@ public class GameView extends View{
         
 	}
 	
+	
+	
 	public void DrawOrigin(final Canvas canvas){
-		new Thread(){
-			public void run(){			
-				try {
-					synchronized (pathQueue) {
-						for (int i=pathQueue.size() - 1;i > 0 ;i--)
-						{
-							int [][] tempA = pathQueue.get(i);
-							postInvalidate();
-							paint.setColor(Color.WHITE);
-							canvas.drawCircle(	
-								tempA[1][0]*(span+1)+span/2+fixMapData,tempA[1][1]*(span+1)+span/2+fixMapData,span/2, 
-								paint
-								);
-						
-						
-							paint.setColor(Color.RED);
-							canvas.drawCircle(	
-								tempA[0][0]*(span+1)+span/2+fixMapData,tempA[0][1]*(span+1)+span/2+fixMapData,span/2, 
-								paint
-								);
-							
 
-							//BitmapManager.
-							try {
-								Thread.sleep(200);
-								postInvalidate();
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-						drawCircleFlag = false;
-						drawLastCircle = true;
-					
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+		int[][] tempA = getPathQueue().get(drawCount);
+		
+		paint.setStyle(Style.FILL);
+		paint.setColor(Color.RED);
+		canvas.drawCircle(tempA[0][0] * (span + 1) + span / 2 + fixMapData,
+				tempA[0][1] * (span + 1) + span / 2 + fixMapData, span / 2,
+				paint);
 
-			
-			//postInvalidate();
-			//paint.setColor(Color.WHITE);
-			//canvas.drawCircle(tempA[0][0]*(span+1)+span/2+fixMapData, tempA[0][1]*(span+1)+span/2+fixMapData, span/2, paint); 
-		}
-	}.start();				
-				
+		Log.i(TAG, "Draw Circle X , Y ( " + tempA[0][0] + " " + tempA[0][1]
+				+ " )");
+		// BitmapManager.
+
+		// drawCircleFlag = false;
+		// drawLastCircle = true;
+
+		// postInvalidate();
+		// paint.setColor(Color.WHITE);
+		// canvas.drawCircle(tempA[0][0]*(span+1)+span/2+fixMapData,
+		// tempA[0][1]*(span+1)+span/2+fixMapData, span/2, paint);
 	}
-	
-//	public void DrawOrigin(Canvas canvas)
-//	{
-//		for (int i=pathQueue.size() - 1;i > 0 ;i--)
-//		{
-//			int [][] tempA = pathQueue.get(i);
-//			postInvalidate();
-//			paint.setColor(Color.WHITE);
-//			canvas.drawCircle(	
-//				tempA[1][0]*(span+1)+span/2+fixMapData,tempA[1][1]*(span+1)+span/2+fixMapData,span/2, 
-//				paint
-//				);
-//		
-//		
-//			paint.setColor(Color.RED);
-//			canvas.drawCircle(	
-//				tempA[0][0]*(span+1)+span/2+fixMapData,tempA[0][1]*(span+1)+span/2+fixMapData,span/2, 
-//				paint
-//				);
-//			
-//			//BitmapManager.
-//			
-//		}
-//		
-//		//postInvalidate();
-//		//paint.setColor(Color.WHITE);
-//		//canvas.drawCircle(tempA[0][0]*(span+1)+span/2+fixMapData, tempA[0][1]*(span+1)+span/2+fixMapData, span/2, paint); 
-//		
-//		 
-//	}
-	
 	
 	protected void onMyDraw(Canvas canvas){
 		super.onDraw(canvas);
 		
-		gcanvas = canvas;
-		pathQueue.clear();
 		canvas.drawColor(Color.GRAY);
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
@@ -251,7 +200,8 @@ public class GameView extends View{
 			if(game.pathFlag){
 				HashMap<String,int[][]> hm=game.hm;
 				int[] temp=game.target;
-				int count=0;		
+				int count=0;
+				
 				while(true){
 					int[][] tempA=hm.get(temp[0]+":"+temp[1]);
 					paint.setColor(Color.BLACK);
@@ -263,18 +213,21 @@ public class GameView extends View{
 						paint
 					);
 					//William added
-					
-					int[][] saveData = {{tempA[0][0],tempA[0][1]},
+					if (algorithmDone == false)
+					{
+						
+						int[][] saveData = {{tempA[0][0],tempA[0][1]},
 										{tempA[1][0],tempA[1][1]}};
-					pathQueue.add(saveData);
-					
+						getPathQueue().add(saveData);// Add correct path here.
+					}
 					count++;
 					if(tempA[1][0]==game.source[0]&&tempA[1][1]==game.source[1]){///���_��X�o�I
 						break;
 					}
 					temp=tempA[1];			
 				}
-
+				
+				
 
 				Message msg1 = myHandler.obtainMessage(1, count);//����TextView��r
 				myHandler.sendMessage(msg1);//�o�eHandler�T��
@@ -316,21 +269,14 @@ public class GameView extends View{
 		
 		if (drawCircleFlag == true)
 		{
+			//DrawOrigin(canvas);
 			DrawOrigin(canvas);
 		}
-		else if (drawLastCircle)
+		else if (isDrawLastCircle())
 		{
 			
-			int [][] tempA = pathQueue.get(0);
-			//DrawOrigin(canvas);
-			
-			paint.setColor(Color.WHITE);
-			canvas.drawCircle(	
-				tempA[1][0]*(span+1)+span/2+fixMapData,tempA[1][1]*(span+1)+span/2+fixMapData,span/2, 
-				paint
-				);
-		
-		
+			int [][] tempA = getPathQueue().get(0);
+			paint.setStyle(Style.FILL);				
 			paint.setColor(Color.RED);
 			canvas.drawCircle(	
 				tempA[0][0]*(span+1)+span/2+fixMapData,tempA[0][1]*(span+1)+span/2+fixMapData,span/2, 
@@ -423,227 +369,29 @@ public class GameView extends View{
 			}
 		}
 	}
-	
-	public void SendCommand(String inStr) throws InterruptedException
-	{
 
-		if (inStr.equals("left")) {
-			for (int i = 0; i < 50; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + inStr);
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-			}
-			
-			for (int i = 0; i < 50; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + "forward");
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-			}
-			
-		} 
-		else if (inStr.equals("right"))
-		{
-			for (int i = 0; i < 50; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + inStr);
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-			}
-			
-			for (int i = 0; i < 50; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + "forward");
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-			}
-			
-		} 
-		else if (inStr.equals("forLeft"))
-		{
-			for (int i = 0; i < 50; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + inStr);
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-			}
-			
-			for (int i = 0; i < 50; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + "forward");
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-			}
-			
-		} 
-		else {
-			for (int i = 0; i < 108; i++) {
-				try {
-					synchronized (XMPPSet) {
-						XMPPSet.XMPPSendText("james1", "direction " + inStr);
-
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				Thread.sleep(30);
-
-			}
-		}
-		
-	}
-	
-	public void RobotStart() throws InterruptedException
-	{
-		Log.i("william", "Robot thread running");
-		
-		if (game.pathFlag == true)
-		{
-		
-			drawCircleFlag = true;
-			drawLastCircle = false;
-			flag = false; // Stop onDraw
-			over2Grid = false;
-			for (int i=pathQueue.size() - 1;i > 0 ;i--)
-			{
-				int[][] axis = pathQueue.get(i);
-				int[][] old_axis = new int[2][2];
-				if ( (old_axis = pathQueue.get(pathQueue.size() - 2)) != null )
-					over2Grid = true;
-				int oX =axis[1][0] , oY = axis[1][1];
-				int nX =axis[0][0] , nY = axis[0][1];
-				
-				Log.i(TAG,"oX = " + oX + " oY = " + oY + " nX = " + nX + " nY = " + nY);
-				// Move on horizontal direction
-				int old_dx = oX - old_axis[1][0];
-				int old_dy = oY - old_axis[1][1];
-				int dx = nX - oX;
-				int dy = nY - oY;
-				if (dx == 0 && dy == 1)
-				{
-					
-					//for (int count=0; count < (nY - oY) ; count++)
-					if (doubleCmd != true)
-						SendCommand("forward");
-					else
-					{
-						SendCommand("right");
-						doubleCmd = false;
-					}
-				}
-				else if (dx == 0 && dy == -1)
-				{
-					
-					SendCommand("backward");
-				}
-				else if (dx == 1 && dy == 0)
-				{
-					SendCommand("left");
-					//SendCommand("right");
-				}
-				else if (dx == -1 && dy == 0)
-				{
-					SendCommand("right");
-				}
-				else if (dx == 1 && dy == 1)
-				{
-					//if(pe =1)
-					//{
-						if (old_dx == 1 && old_dy  == 1)
-						{
-
-								SendCommand("forward");
-								doubleCmd = true;
-
-								
-						}
-						else
-							SendCommand("forLeft");
-					//}
-				}
-				else if (dx == 1 && dy == -1)
-				{
-					if (old_dx == 1 && old_dy  == -1)
-						SendCommand("forward");
-					else
-						SendCommand("forRig");
-				}
-				else if (dx == -1 && dy == -1)
-				{
-					if (old_dx == -1 && old_dy  == -1)
-						SendCommand("forward");
-					else
-						SendCommand("bacRig");
-				}
-				else if (dx == -1 && dy == 1)
-				{
-					if (old_dx == -1 && old_dy  == 1)
-						SendCommand("forward");
-					else
-						SendCommand("bacLeft");
-				}
-
-				//DrawOrigin(gcanvas);
-				//invalidate();
-
-				//drawCircleFlag = true;
-				MapList.source[0] = nX;
-				MapList.source[1] = nY;
-				postInvalidate();
-			}
-			
-			flag = true; // Start to update
-			//RunThreadTouch(true);
-			//canvas = holder.lockCanvas();
-			// onDraw(canvas);
-			// onDrawText(canvas);
-			//repaint(canvas);
-	
-			// holder.unlockCanvasAndPost(canvas);
-			flagR = false;
-			//drawCircleFlag = false;
-		}
-	}
 
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec){//�мg����k�A��^���O��View���j�p
         setMeasuredDimension(VIEW_WIDTH,VIEW_HEIGHT);
     }
+	public ArrayList<int[][] > getPathQueue() {
+		return pathQueue;
+	}
+	public void setPathQueue(ArrayList<int[][] > pathQueue) {
+		this.pathQueue = pathQueue;
+	}
+	public boolean isDrawLastCircle() {
+		return drawLastCircle;
+	}
+	public void setDrawLastCircle(boolean drawLastCircle) {
+		this.drawLastCircle = drawLastCircle;
+	}
+	
+	public void PathQueueClear()
+	{
+		this.pathQueue.clear();
+	}
+	
+
+
 }
