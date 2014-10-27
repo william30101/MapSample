@@ -34,7 +34,7 @@ public class GameView extends View{
 	GameView GV;
 	Spinner mySpinner;// Spinner���ޥ�
 	TextView CDTextView;
-	int span = 25;
+	int span = 16;
 	int theta = 0;
 	public boolean drawCircleFlag=false;
 	private boolean drawLastCircle= false;
@@ -56,6 +56,7 @@ public class GameView extends View{
     int gridX = 0 , gridY = 0;
     int row = 0;
 	int col = 0;
+	Game gamejava = new Game();
 	
     public static int drawCount = 0; // For drawcircle position
     
@@ -103,12 +104,12 @@ public class GameView extends View{
 		catch(Exception e){}
 	}
 	
-	public void RunThreadTouch(boolean inFlag)
-    {
-		st = new ShowThread();
-    	flag = inFlag;
-    	singleThreadExecutor.execute(st);
-    }
+//	public void RunThreadTouch(boolean inFlag)
+//    {
+//		st = new ShowThread();
+//    	flag = inFlag;
+//    	//singleThreadExecutor.execute(st);
+//    }
 	
 	public void SetRobotAxis(double x , double y)
 	{
@@ -296,6 +297,7 @@ public class GameView extends View{
 		//Log.i("william","test");
 		
         if (event.getAction() == MotionEvent.ACTION_DOWN  ) {
+        	
 			touchX = (int) event.getX();
 			touchY = (int) event.getY();
 			tempwidth = touchX - x;
@@ -304,6 +306,7 @@ public class GameView extends View{
 			int i = 0, j = 0;
 
 			int[] pos = getPosW(event);// ®Ú¾Ú®y¼Ð´«ºâ¦¨©Ò¦bªº¦æ©M¦C
+			//int[] pos = getPos(event);
 			i = pos[0];
 			j = pos[1];
 

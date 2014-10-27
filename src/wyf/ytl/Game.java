@@ -6,6 +6,7 @@ import java.util.PriorityQueue;
 import java.util.Stack;
 import android.os.Handler;//�ޤJ�������O
 import android.os.Message;//�ޤJ�������O
+import android.util.Log;
 import android.widget.Button;//�ޤJ�������O
 import android.widget.TextView;//�ޤJ�������O
 public class Game {//�t��k���O
@@ -47,6 +48,37 @@ public class Game {//�t��k���O
         	}
         }
 	};
+	
+	
+	public void reloadMap(int number , GameView gv)
+	{
+		Log.i("william","change map to " + number);
+		
+		
+		synchronized (map) {
+			try {
+				mapId = 1;
+				//map = MapList.customized_map3[0];
+				map = MapList.customized_map2[mapId];
+				gv.postInvalidate();
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			try {
+				Thread.sleep(30);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		
+		
+		
+	}
+	
 	public void clearState(){//�M�ũҦ����A�P�M��
 		gameView.algorithmDone = false;
 		gameView.PathQueueClear();

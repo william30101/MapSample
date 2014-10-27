@@ -156,12 +156,12 @@
             android:text="Save" />
 
         <Button
-            android:id="@+id/sixForwareBtn"
+            android:id="@+id/resetBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_x="443dp"
             android:layout_y="373dp"
-            android:text="SixF" />
+            android:text="Reset" />
 
         <Button
             android:id="@+id/runBtn"
@@ -170,6 +170,32 @@
             android:layout_x="747dp"
             android:layout_y="211dp"
             android:text="Run" />
+
+        <Button
+            android:id="@+id/stswatBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="746dp"
+            android:layout_y="342dp"
+            android:text="sTswatBtn" />
+
+        <Button
+            android:id="@+id/map1Change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="744dp"
+            android:layout_y="397dp"
+            android:text="map1"
+            android:visibility="invisible" />
+
+        <Button
+            android:id="@+id/map2Change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_x="813dp"
+            android:layout_y="397dp"
+            android:text="map2"
+            android:visibility="invisible" />
 
     </AbsoluteLayout>
 

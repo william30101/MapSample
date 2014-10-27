@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import wyf.encoder.Encoder;
 import wyf.ytl.Game;
 import wyf.ytl.GameView;
+import wyf.ytl.MapList;
 import wyf.ytl.NetworkStatus;
 import wyf.ytl.R;
 import xmpp.XMPPSetting;
@@ -80,7 +81,10 @@ public class SetBtnFun {
 		ImageButton bacLeft= (ImageButton)v.findViewById(R.id.bacLeft);
 		
 		Button saveBtn =  (Button)v.findViewById(R.id.saveBtn);
-		Button sixForwardBtn =  (Button)v.findViewById(R.id.sixForwareBtn);
+		Button resetBtn =  (Button)v.findViewById(R.id.resetBtn);
+		Button stswatBtn =  (Button)v.findViewById(R.id.stswatBtn);
+		Button map1Btn =  (Button)v.findViewById(R.id.map1Change);
+		Button map2Btn =  (Button)v.findViewById(R.id.map2Change);
 		runBtn =  (Button)v.findViewById(R.id.runBtn);
 		
 		backward.setOnTouchListener(ClickListener);
@@ -94,7 +98,10 @@ public class SetBtnFun {
 		bacLeft.setOnTouchListener(ClickListener);
 		
 		saveBtn.setOnClickListener(onClickListener);
-		sixForwardBtn.setOnClickListener(onClickListener);
+		resetBtn.setOnClickListener(onClickListener);
+		stswatBtn.setOnClickListener(onClickListener);
+		map1Btn.setOnClickListener(onClickListener);
+		map2Btn.setOnClickListener(onClickListener);
 		runBtn.setOnClickListener(onClickListener);
 
 
@@ -109,28 +116,46 @@ public class SetBtnFun {
 				// TODO Auto-generated method stub
 				btnMsg = v.getId();
 
-				switch (btnMsg) {
-				case R.id.runBtn:
-						SendAlgo.RobotStart(gameView,game,XMPPSet);
+			switch (btnMsg) {
+			case R.id.map1Change:
+
+				game.reloadMap(0,gameView);
+
+				break;
+			case R.id.map2Change:
+
+				game.reloadMap(1,gameView);
+
+				break;
+				case R.id.stswatBtn:
+					
+					MapList.target[0][0] = 8;
+					MapList.target[0][1] = 1;
 
 					break;
-				case R.id.sixForwareBtn:
-					Log.i(TAG,"Forward six");
+				case R.id.runBtn:
 					
-					
-				for (int i = 0; i < 6; i++) {
-					try {
-						SendToBoard("direction forward");
-						Thread.sleep(50);
-					} catch (IOException e2) {
-						// TODO Auto-generated catch block
-						e2.printStackTrace();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					synchronized (SendAlgo) {
+						try {
+							SendAlgo.RobotStart(gameView,game,XMPPSet);
+
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
 					}
-				}
+						
+
+					break;
+				case R.id.resetBtn:
+	       
+					Log.i(TAG,"rest btn");
 					
+					MapList.target[0][0] = 8;
+					MapList.target[0][1] = 8;
+				
+					game.source[0] = 8;
+					game.source[1] = 1;
 					break;
 				
 				case R.id.saveBtn:

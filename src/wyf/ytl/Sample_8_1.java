@@ -59,6 +59,9 @@ public class Sample_8_1 extends Activity {
         goButton = (Button) findViewById(R.id.go);
         jamesSignButton =  (Button) findViewById(R.id.jamesSignBtn);
         williamSignButton =  (Button) findViewById(R.id.williamSignBtn);
+
+        //For demo test
+        signin("william1");
         
         game = new Game();//��l�ƺt��k���O
         //�s�طj���U�ԲM�檺�ҫ�
@@ -102,7 +105,7 @@ public class Sample_8_1 extends Activity {
             	}
          );
         
-        gameView.RunThreadTouch(true);
+        //gameView.RunThreadTouch(true);
         
         encoder = new Encoder(gameView);
         

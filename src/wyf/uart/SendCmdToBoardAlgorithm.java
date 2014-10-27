@@ -21,13 +21,70 @@ public class SendCmdToBoardAlgorithm {
 	ArrayList<int[][]> pathQ = new ArrayList<int[][]>();
 	//GameView gameView;
 	
+	public void DirectionCorrect(XMPPSetting inXMPPSet,String inString, int times) {
+	
+		for (int i = 0; i < times; i++) {
+			
+			synchronized (inXMPPSet) {
+			try {
+				inXMPPSet.XMPPSendText("james1", "direction " + inString);
+					
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			/*try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}*/
+			}
+		}
+		
+	}
+	
 	public void SendCommand(XMPPSetting inXMPPSet,String inString) {
 		// TODO Auto-generated method stub
 		Log.i(TAG," Send command = " + inString);
 		
+				if (inString.equals("left")) {
+					for (int i = 0; i < 90; i++) {
 		
-				if (inString.equals("left") || inString.equals("right")) {
-					for (int i = 0; i < 10; i++) {
+						synchronized (inXMPPSet) {
+						try {
+							inXMPPSet.XMPPSendText("james1", "direction " + inString);
+								
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						/*try {
+							Thread.sleep(20);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}*/
+						
+						
+						
+						}
+					}
+					DirectionCorrect(inXMPPSet,inString,10);
+				}
+		
+				if (inString.equals("right")) {
+					for (int i = 0; i < 80; i++) {
 
 						synchronized (inXMPPSet) {
 						try {
@@ -48,32 +105,34 @@ public class SendCmdToBoardAlgorithm {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}*/
+						
+						
 						}
 					}
-					for (int i = 0; i < 10; i++) {
+					DirectionCorrect(inXMPPSet,inString,10);
+					
+
+				} else if(inString.equals("backward")){
+					for (int i = 0; i < 13; i++) {
 						synchronized (inXMPPSet) {
-						try {
-							inXMPPSet.XMPPSendText("james1", "direction " + "forward");
-								
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						/*try {
-							Thread.sleep(20);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}*/
+							try {
+								inXMPPSet.XMPPSendText("james1", "direction " + inString);
+									
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					
 						}
 					}
-				} else {
-					for (int i = 0; i < 20; i++) {
+				}else if (inString.equals("forward"))
+				{
+					for (int i = 0; i < 32; i++) {
 						synchronized (inXMPPSet) {
 							try {
 								inXMPPSet.XMPPSendText("james1", "direction " + inString);
@@ -91,7 +150,33 @@ public class SendCmdToBoardAlgorithm {
 						}
 					}
 				}
-	}
+				// for 45 angle
+				else
+				{
+					for (int i = 0; i < 45; i++) {
+						synchronized (inXMPPSet) {
+							try {
+								inXMPPSet.XMPPSendText("james1", "direction " + inString);
+									
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							try {
+								Thread.sleep(100);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+					
+						}
+					}
+					
+					if (inString.equals("bacRig") || inString.equals("bacLeft"))
+						inString = "backward";
+						
+						DirectionCorrect(inXMPPSet,inString,10);
+				}
+			}
 	
 	
 	public String FindDirection(int inTheta)
@@ -114,7 +199,7 @@ public class SendCmdToBoardAlgorithm {
 		{
 			direction = "right";
 		}
-		else if (inTheta == 90)
+		else if (inTheta == -90)
 		{
 			direction = "left";
 		}
@@ -122,7 +207,7 @@ public class SendCmdToBoardAlgorithm {
 		{
 			direction = "bacRig";
 		}
-		else if (inTheta == 135)
+		else if (inTheta == -135)
 		{
 			direction = "bacLeft";
 		}
@@ -130,11 +215,17 @@ public class SendCmdToBoardAlgorithm {
 		{
 			direction = "backward";
 		}
+		// Is this okay??
+		// need to check this condition
+		else if (inTheta == -180)
+		{
+			direction = "backward";
+		}
 		else if (inTheta == 225)
 		{
 			direction = "bacLeft";
 		}
-		else if (inTheta == 225)
+		else if (inTheta == -225)
 		{
 			direction = "bacRig";
 		}
@@ -158,13 +249,14 @@ public class SendCmdToBoardAlgorithm {
 		return direction;
 	}
 	
-	public int FindCompass(int dx , int dy)
+	public int FindCompass(final XMPPSetting inXMPPSet, int dx , int dy)
 	{
 		int compass = 0;
 		if (dx == 0 && dy == 1) {
 			compass = 0;
 			//SendCommand("forward");
-		} else if (dx == 1 && dy == -1) {
+			//SendCommand(inXMPPSet,"forward");
+		} else if (dx == -1 && dy == 1) {
 			compass = 45;
 			//SendCommand("forRig");
 		} else if (dx == -1 && dy == 0) {
@@ -175,8 +267,9 @@ public class SendCmdToBoardAlgorithm {
 			//SendCommand("bacRig");
 		} else if (dx == 0 && dy == -1) {
 			compass = 180;
+			//SendCommand(inXMPPSet,"backward");
 			//SendCommand("backward");
-		} else if (dx == -1 && dy == 1) {
+		} else if (dx == 1 && dy == -1) {
 			compass = 225;
 			//SendCommand("bacLeft");
 		} else if (dx == 1 && dy == 0) {
@@ -258,13 +351,23 @@ public class SendCmdToBoardAlgorithm {
 						int dx = nextX - originalX;
 						int dy = nextY - originalY;
 						
-						int OriginalCompass = FindCompass(old_dx , old_dy);
-						int nextCompass = FindCompass(dx , dy);
+						int OriginalCompass = FindCompass(inXMPPSet, old_dx , old_dy);
+						int nextCompass = FindCompass(inXMPPSet, dx , dy);
 						
 						int theta = nextCompass - OriginalCompass;
 						
 						Log.i(TAG, " OriginalCompass = " + OriginalCompass+
 								" nextCompass = " + nextCompass + " \n theta = " + theta);
+						//Avoid backward , but robort  turn to forward 
+						if (OriginalCompass == 180 && nextCompass == 180)
+							theta = 180;
+						else if (OriginalCompass == 225 && nextCompass == 225)
+							theta = 180;
+						else if (OriginalCompass == 135 && nextCompass == 135)
+							theta = 180;
+						else if (OriginalCompass == 135 || OriginalCompass == 180 
+								|| OriginalCompass == 225)
+							theta = theta + 180 ;
 						
 						String dir = FindDirection(theta);
 						SendCommand(inXMPPSet,dir);
@@ -279,7 +382,8 @@ public class SendCmdToBoardAlgorithm {
 					
 					gameView.drawCircleFlag = false;
 					gameView.setDrawLastCircle(true);
-					gameView.RunThreadTouch(true); // Start update thread
+					//gameView.RunThreadTouch(true); // Start update thread
+					gameView.postInvalidate();
 					
 					// Set new start position
 
