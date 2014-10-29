@@ -103,6 +103,8 @@ public class UartMsg extends wyf.encoder.BaseCmd{
 		return retBytes;
 	}
 	
+	//Baudrate [19200 , 115200 , 9600]
+	
 	public static int OpenSetUartPort(String portName)
 	{
 		
@@ -133,7 +135,7 @@ public class UartMsg extends wyf.encoder.BaseCmd{
 			//if (nanoFd > 0) {
 			if (nanoFd > 0) {
 
-				Baud_rate = 2; // 115200
+				Baud_rate = 2; // 9600
 				SetUart(Baud_rate, 2);
 				fd = nanoFd;
 			}

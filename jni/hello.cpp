@@ -201,7 +201,7 @@ extern "C"
 	JNIEXPORT jint JNICALL Native_SetUart(JNIEnv *env,jobject mc, jint i,jint fdnum)
 	{
 		int Baud_rate[] = { B19200, B115200 , B9600};
-		LOGI("Native_SetUart %d", i);
+		LOGI("Native_SetUart %d", Baud_rate[i]);
 
 		if (fdnum == 1)
 		{
