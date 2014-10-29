@@ -22,13 +22,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Spinner;
 import android.widget.TextView;
-import xmpp.XMPPSetting;
 public class GameView extends View{
 	
 	private String TAG = "william";
 	private static final int VIEW_WIDTH = 640;
 	private static final int VIEW_HEIGHT = 640;
-	private XMPPSetting XMPPSet = new XMPPSetting();;
  
 	Game game;
 	GameView GV;
@@ -37,7 +35,6 @@ public class GameView extends View{
 	int span = 16;
 	int theta = 0;
 	public boolean drawCircleFlag=false;
-	private boolean drawLastCircle= false;
 
 	Bitmap source = BitmapFactory.decodeResource(getResources(), R.drawable.source);
 	Bitmap target = BitmapFactory.decodeResource(getResources(), R.drawable.target)	;
@@ -47,7 +44,6 @@ public class GameView extends View{
 	// William Added
 	int touchX=0,touchY=0;
 	int x,y;
-    boolean chk = false;
     int tempwidth=0;
     int tempheight=0;
     String inStr = "test";
@@ -57,6 +53,7 @@ public class GameView extends View{
     int row = 0;
 	int col = 0;
 	Game gamejava = new Game();
+	int drawBaseLine = 100 , drawIncrease = 20;
 	
     public static int drawCount = 0; // For drawcircle position
     
@@ -66,7 +63,7 @@ public class GameView extends View{
     int[] old_pos;
     MapList maplist = new MapList();
     
-    public boolean flag = false , flagR = false , doubleCmd = false , algorithmDone = false;
+    public boolean refreshFlag = false  , doubleCmd = false , algorithmDone = false;
     private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
     public static ShowThread st;
 	
@@ -104,12 +101,12 @@ public class GameView extends View{
 		catch(Exception e){}
 	}
 	
-//	public void RunThreadTouch(boolean inFlag)
-//    {
-//		st = new ShowThread();
-//    	flag = inFlag;
-//    	//singleThreadExecutor.execute(st);
-//    }
+	public void RunThreadTouch(boolean inFlag)
+    {
+		st = new ShowThread();
+		refreshFlag = inFlag;
+    	singleThreadExecutor.execute(st);
+    }
 	
 	public void SetRobotAxis(double x , double y)
 	{
@@ -126,12 +123,11 @@ public class GameView extends View{
 		paint.setARGB(255, 255, 0, 0);
 		paint.setStyle(Style.STROKE);
 		paint.setTextSize(15);
-        canvas.drawText("Tx = " + touchX + " Ty = " + touchY ,380, 100, paint);
-        canvas.drawText("chk : " + chk, 380, 120, paint);
-        canvas.drawText("tempX,Y : " + tempwidth + "," + tempheight, 380, 140, paint);
-        canvas.drawText("GridX,Y : " + gridX + "," + gridY, 380, 160, paint);
-        canvas.drawText("RX : " + String.format("%.3f", rX) , 380, 180, paint);
-        canvas.drawText("RY : " + String.format("%.3f", rY), 380, 200, paint);
+        canvas.drawText("Tx = " + touchX + " Ty = " + touchY ,380, drawBaseLine + drawIncrease, paint);
+        canvas.drawText("tempX,Y : " + tempwidth + "," + tempheight, 380, drawBaseLine + drawIncrease * 2 , paint);
+        canvas.drawText("GridX,Y : " + gridX + "," + gridY, 380, drawBaseLine + drawIncrease * 3, paint);
+        canvas.drawText("RX : " + String.format("%.3f", rX) , 380, drawBaseLine + drawIncrease * 4, paint);
+        canvas.drawText("RY : " + String.format("%.3f", rY), 380, drawBaseLine + drawIncrease * 5, paint);
         
 	}
 	
@@ -166,8 +162,9 @@ public class GameView extends View{
 		canvas.drawColor(Color.GRAY);
 		paint.setColor(Color.BLACK);
 		paint.setStyle(Style.STROKE);
-		canvas.drawRect(5, 55, 325, 376, paint);
+		//canvas.drawRect(5, 55, 325, 376, paint);
 		map = game.map;
+		//Log.i(TAG,"getting onMyDraw");
 		row = map.length;
 		col = map[0].length;
 		for(int i=0; i<row; i++){
@@ -186,7 +183,8 @@ public class GameView extends View{
 				}
 			}
 		}
-		ArrayList<int[][]> searchProcess=game.searchProcess;
+
+		ArrayList<int[][]> searchProcess=game.getSearchProcess();
 		for(int k=0;k<searchProcess.size();k++){//ø�s�M��L�{
 			int[][] edge=searchProcess.get(k);  
 			paint.setColor(Color.BLACK);
@@ -203,7 +201,7 @@ public class GameView extends View{
 			mySpinner.getSelectedItemId()==1||
 			mySpinner.getSelectedItemId()==2
 		){
-			if(game.pathFlag){
+			if(game.isPathFlag()){
 				HashMap<String,int[][]> hm=game.hm;
 				int[] temp=game.target;
 				int count=0;
@@ -238,12 +236,12 @@ public class GameView extends View{
 				Message msg1 = myHandler.obtainMessage(1, count);//����TextView��r
 				myHandler.sendMessage(msg1);//�o�eHandler�T��
 			}			
-		}
+		}        	
 		else if(
 			mySpinner.getSelectedItemId()==3||
 			mySpinner.getSelectedItemId()==4
 		){//"Dijkstra"ø�s
-		    if(game.pathFlag){
+		    if(game.isPathFlag()){
 		    	HashMap<String,ArrayList<int[][]>> hmPath=game.hmPath;
 		    	ArrayList<int[][]> alPath=hmPath.get(game.target[0]+":"+game.target[1]);
 				for(int[][] tempA:alPath){
@@ -269,26 +267,17 @@ public class GameView extends View{
 		//ø�s�ؼ��I
 		canvas.drawBitmap(target, fixMapData+game.target[0]*(span+1), fixMapData+game.target[1]*(span+1), paint);
 		
+		//Log.i(TAG,"Draw source = "+ game.source[0] + " , " + game.source[1]);
+		//Log.i(TAG,"Draw target = "+ game.target[0] + " , " + game.target[1]);
 		
 		//William Added
 		onDrawText(canvas);
 		
 		if (drawCircleFlag == true)
 		{
-			//DrawOrigin(canvas);
 			DrawOrigin(canvas);
 		}
-		else if (isDrawLastCircle())
-		{
-			
-			int [][] tempA = getPathQueue().get(0);
-			paint.setStyle(Style.FILL);				
-			paint.setColor(Color.RED);
-			canvas.drawCircle(	
-				tempA[0][0]*(span+1)+span/2+fixMapData,tempA[0][1]*(span+1)+span/2+fixMapData,span/2, 
-				paint
-				);
-		}
+		
 	}
 	
 	@Override
@@ -298,34 +287,61 @@ public class GameView extends View{
 		
         if (event.getAction() == MotionEvent.ACTION_DOWN  ) {
         	
-			touchX = (int) event.getX();
-			touchY = (int) event.getY();
-			tempwidth = touchX - x;
-			tempheight = touchY - y;
+        	int pointerCount = event.getPointerCount();
+        	
+        	//Log.i(TAG," touch down pointer count = " + pointerCount);
+        	
+        	// Avoid thread competition , when user touch 2 points at the same time
+        	// only one touch point can enter this scope.
+        	if (pointerCount > 1 )
+        		pointerCount = 1;
+        	{
+        		 for (int i = 0; i < pointerCount; i++) {
+        			
+		        	RunThreadTouch(true);
+		        	
+		
+					touchX = (int) event.getX();
+					touchY = (int) event.getY();
+					tempwidth = touchX - x;
+					tempheight = touchY - y;
+		
+					int[] pos = getPosW(event);
 
-			int i = 0, j = 0;
-
-			int[] pos = getPosW(event);// ®Ú¾Ú®y¼Ð´«ºâ¦¨©Ò¦bªº¦æ©M¦C
+					
+					//Log.i(TAG,"Map pos[0] pos[1] = ( " + pos[0] + " , " + pos[1] + " )");
+					
+					//Draw Grid position on canvas
+					gridX = pos[0];
+					gridY = pos[1];
+					
+					//Setting net Target postion
+					MapList.target[0][0] = pos[0];
+					MapList.target[0][1] = pos[1];
+        		 }
+        	}
+        	
 			//int[] pos = getPos(event);
-			i = pos[0];
-			j = pos[1];
+			//i = pos[0];
+			//j = pos[1];
 
-			synchronized (MapList.target) {
+			/*synchronized (MapList.target) {
 				try {
 					MapList.target[0][0] = i;
 					MapList.target[0][1] = j;
 					// XMPPSet.XMPPSendText("james1", "direction left");
 					// Map.target
 					chk = true;
-
+// Avoid thread competition , when user touch 2 points at the same time
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-			}
+			}*/
         }
         else if (event.getAction() == MotionEvent.ACTION_UP) {
-            chk = false;
+        	//Log.i(TAG," touch up");
+        	RunThreadTouch(false);
         }
         return true;
 
@@ -336,7 +352,7 @@ public class GameView extends View{
 		int[] pos = new int[2];
 		double x = e.getX();//±o¨ìÂIÀ»¦ì¸mªºx®y¼Ð
 		double y = e.getY();//±o¨ìÂIÀ»¦ì¸mªºy®y¼Ð
-		if(x>4 && y>4 && x<326 && y<321){//ÂIÀ»ªº¬O´Ñ½L®É
+		if(x>4 && y>4 && x<326 && y<321){//ÂIÀ»ªº¬O´Ñ½L®ÉrefreshFlag
 //			pos[0] = Math.round((float)((y-21)/36));//¨ú±o©Ò¦bªº¦æ
 //			pos[1] = Math.round((float)((x-21)/35));//¨ú±o©Ò¦bªº¦C
 			pos[0] = Math.round((float)((x-8)/14));//¨ú±o©Ò¦bªº¦C
@@ -370,52 +386,65 @@ public class GameView extends View{
 
 			int xPos = (int) x / xGridSize;
 			int yPos = (int) y / yGridSize;
-			if (map[yPos][xPos] == 0) {
-				pos[0] = xPos;
-				pos[1] = yPos;
-			} else {
-				pos[0] = MapList.target[0][0];
-				pos[1] = MapList.target[0][1];
+			//Log.i(TAG,"( xPos , yPos ) = ( " + xPos + " , " + yPos + " )");
+			
+			//Avoid map object be used on onMyDraw function
+			synchronized (map) { 
+				try {
+					if (map[yPos][xPos] == 0) {
+						//Log.i(TAG, "draw on map[yPos][xPos]= "
+						//		+ map[yPos][xPos] + "( xPos , yPos ) = ( "
+						//		+ xPos + " , " + yPos + " )");
+						pos[0] = xPos;
+						pos[1] = yPos;
+					} else {
+						//Log.i(TAG, "can't draw on map[yPos][xPos]= "
+						//		+ map[yPos][xPos] + "( xPos , yPos ) = ( "
+						//		+ xPos + " , " + yPos + " )");
+						pos[0] = -1;
+						pos[1] = -1;
+					}
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		}
 		else{
-			pos[0] = MapList.target[0][0];
-			pos[1] = MapList.target[0][1];
+			//pos[0] = MapList.target[0][0];
+			//pos[1] = MapList.target[0][1];
+			pos[0] = -1;
+			pos[1] = -1;
 		}
 		return pos;
 	}
 	
 	public class ShowThread implements Runnable {
 
-		Canvas canvas;
-		// flag = false;
-		int span = 20;
+		int delayTime = 50;
 
 		public ShowThread() {
-			flag = true;
+			refreshFlag = true;
 
 		}
 
 		public void run() {
 
-			while (flag) {
+			while (refreshFlag) {
 				
-				try {
+				
 					synchronized (inStr) {
 						
+						try {
 						postInvalidate();
-						//invalidate();
-						//canvas = holder.lockCanvas();
-						// onDraw(canvas);
-						// onDrawText(canvas);
-						//repaint(canvas);
-
-						// holder.unlockCanvasAndPost(canvas);
-						Thread.sleep(span);
+						//Log.i(TAG,"Thread ID = " + android.os.Process.myTid());
+						
+						// Avoid thread competition , when user touch 2 points at the same time
+						Thread.sleep(delayTime); 
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				
 
 			}
 		}
@@ -430,12 +459,6 @@ public class GameView extends View{
 	}
 	public void setPathQueue(ArrayList<int[][] > pathQueue) {
 		this.pathQueue = pathQueue;
-	}
-	public boolean isDrawLastCircle() {
-		return drawLastCircle;
-	}
-	public void setDrawLastCircle(boolean drawLastCircle) {
-		this.drawLastCircle = drawLastCircle;
 	}
 	
 	public void PathQueueClear()

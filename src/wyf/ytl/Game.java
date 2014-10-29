@@ -4,6 +4,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Stack;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import wyf.ytl.GameView.ShowThread;
+
+import android.graphics.Canvas;
 import android.os.Handler;//�ޤJ�������O
 import android.os.Message;//�ޤJ�������O
 import android.util.Log;
@@ -18,7 +24,7 @@ public class Game {//�t��k���O
 	GameView gameView;//gameView���ޥ�
 	Button goButton;//goButton���ޥ�
 	TextView BSTextView;//BSTextView���ޥ�
-	ArrayList<int[][]> searchProcess=new ArrayList<int[][]>();//�j���L�{
+	private static ArrayList<int[][]> searchProcess=new ArrayList<int[][]>();//�j���L�{
 	Stack<int[][]> stack=new Stack<int[][]>();//�`���u��ҥΰ��|
 	HashMap<String,int[][]> hm=new HashMap<String,int[][]>();//���G���|�O��
 	LinkedList<int[][]> queue=new LinkedList<int[][]>();//�s���u��ҥΦ�C
@@ -35,8 +41,12 @@ public class Game {//�t��k���O
 		{-1,1},{-1,-1},
 		{1,-1},{1,1}
 	};
-	boolean pathFlag=false;//true ���F���|
+	private static boolean pathFlag=false;//true ���F���|
 	int timeSpan=10;//�ɶ����j
+	
+	BFSThread BFST;
+	private ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
+	
 	private Handler myHandler = new Handler(){//�Ψӧ�sUI�����
         public void handleMessage(Message msg){
         	if(msg.what == 1){//���ܫ��s���A
@@ -82,8 +92,8 @@ public class Game {//�t��k���O
 	public void clearState(){//�M�ũҦ����A�P�M��
 		gameView.algorithmDone = false;
 		gameView.PathQueueClear();
-		pathFlag=false;	
-		searchProcess.clear();
+		setPathFlag(false);	
+		getSearchProcess().clear();
 		stack.clear();
 		queue.clear();
 		astarQueue.clear();
@@ -103,7 +113,11 @@ public class Game {//�t��k���O
 				DFS();
 				break;
 			case 1://�s���u��t��k
-				BFS();
+				
+				
+				BFST = new BFSThread();
+		    	singleThreadExecutor.execute(BFST);
+				//BFS();
 				break;
 			case 2://�s���u�� A*�t��k
 				BFSAStar();
@@ -138,7 +152,7 @@ public class Game {//�t��k���O
 					count++;
 					visited[tempTarget[1]][tempTarget[0]]=1;//���ѥت��I���X�ݹL
 					//�N�{�ɥت��I�[�J�j���L�{��
-					searchProcess.add(currentEdge);
+					getSearchProcess().add(currentEdge);
 					//�O���{�ɥت��I�����`�I
 					hm.put(tempTarget[0]+":"+tempTarget[1],new int[][]{currentEdge[1],currentEdge[0]});
 					gameView.postInvalidate();
@@ -164,7 +178,7 @@ public class Game {//�t��k���O
 						}
 					}
 				}
-				pathFlag=true;	
+				setPathFlag(true);	
 				gameView.postInvalidate();
 				//�]�w���s���i�Ω�
 				Message msg1 = myHandler.obtainMessage(1);
@@ -195,7 +209,7 @@ public class Game {//�t��k���O
 					}
 					count++;
 					visited[tempTarget[1]][tempTarget[0]]=1;//���ѥت��I���X�ݹL
-					searchProcess.add(currentEdge);//�N�{�ɥت��I�[�J�j���L�{��
+					getSearchProcess().add(currentEdge);//�N�{�ɥت��I�[�J�j���L�{��
 					//�O���{�ɥت��I�����`�I
 					hm.put(tempTarget[0]+":"+tempTarget[1],
 							new int[][]{currentEdge[1],currentEdge[0]});
@@ -223,7 +237,7 @@ public class Game {//�t��k���O
 						}
 					}
 				}
-				pathFlag=true;	
+				setPathFlag(true);	
 				gameView.postInvalidate();
 				Message msg1 = myHandler.obtainMessage(1);
 				myHandler.sendMessage(msg1);//�]�w���s���i�Ω�
@@ -232,6 +246,72 @@ public class Game {//�t��k���O
 				
 			}
 		}.start();				
+	}
+	
+	
+	public class BFSThread implements Runnable {
+
+		public void run() {
+				try {
+					synchronized (gameView) {
+						
+						int count=0;
+						boolean flag=true;
+						int[][] start={
+							{source[0],source[1]},
+							{source[0],source[1]}
+						};
+						queue.offer(start);
+						while(flag){					
+							int[][] currentEdge=queue.poll();//�q������X��
+							int[] tempTarget=currentEdge[1];//��X���䪺�ت��I
+							//�P�_�ت��I�O�_�h�L�A�Y�h�L�h�����i�J�U���j��
+							if(visited[tempTarget[1]][tempTarget[0]]==1){
+								continue;
+							}
+							count++;
+							visited[tempTarget[1]][tempTarget[0]]=1;//���ѥت��I���X�ݹL
+							getSearchProcess().add(currentEdge);//�N�{�ɥت��I�[�J�j���L�{��
+							//�O���{�ɥت��I�����`�I
+							hm.put(tempTarget[0]+":"+tempTarget[1],
+									new int[][]{currentEdge[1],currentEdge[0]});
+							gameView.postInvalidate();
+							try{Thread.sleep(timeSpan);}catch(Exception e){e.printStackTrace();}
+							//�P�_���_���ت��I
+							if(tempTarget[0]==target[0]&&tempTarget[1]==target[1]){
+								break;
+							}
+							//�N�Ҧ��i�઺��J��C
+							int currCol=tempTarget[0];
+							int currRow=tempTarget[1];
+							for(int[] rc:sequence){
+								int i=rc[1];
+								int j=rc[0];
+								if(i==0&&j==0){continue;}
+								if(currRow+i>=0&&currRow+i<MapList.map[mapId].length
+										&&currCol+j>=0&&currCol+j<MapList.map[mapId][0].length&&
+								map[currRow+i][currCol+j]!=1){
+									int[][] tempEdge={
+										{tempTarget[0],tempTarget[1]},
+										{currCol+j,currRow+i}
+									};
+									queue.offer(tempEdge);
+								}
+							}
+						}
+						setPathFlag(true);	
+						gameView.postInvalidate();
+						Message msg1 = myHandler.obtainMessage(1);
+						myHandler.sendMessage(msg1);//�]�w���s���i�Ω�
+						Message msg2 = myHandler.obtainMessage(2, count);
+						myHandler.sendMessage(msg2);//����TextView��r
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+			
+		}
 	}
 	
 	public void Dijkstra(){//Dijkstra�t��k
@@ -254,7 +334,7 @@ public class Game {//�t��k���O
 					al.add(new int[][]{{start[0],start[1]},{tcol,trow}});
 					hmPath.put(key,al);	
 					//�N�h�L���I�O��			
-					searchProcess.add(new int[][]{{start[0],start[1]},{tcol,trow}});
+					getSearchProcess().add(new int[][]{{start[0],start[1]},{tcol,trow}});
 					count++;			
 				}				
 				gameView.postInvalidate();
@@ -299,13 +379,13 @@ public class Game {//�t��k���O
 							length[trow][tcol]=dkPluskj;
 							//�Y���I�q���p��L���|��׫h�N���I�[�J�ҹ�L�{�O��
 							if(dj==9999){//�N�h�L���I�O��	
-								searchProcess.add(new int[][]{{k[0],k[1]},{tcol,trow}});
+								getSearchProcess().add(new int[][]{{k[0],k[1]},{tcol,trow}});
 								count++;
 							}
 						}
 						//�ݬO�_���ت��I
 						if(tcol==target[0]&&trow==target[1]){
-							pathFlag=true;
+							setPathFlag(true);
 							Message msg1 = myHandler.obtainMessage(1);
 							myHandler.sendMessage(msg1);//�]�w���s���i�Ω�
 							Message msg2 = myHandler.obtainMessage(2, count);
@@ -339,7 +419,7 @@ public class Game {//�t��k���O
 					count++;
 					//���ѥت��I���X�ݹL
 					visited[tempTarget[1]][tempTarget[0]]=visited[currentEdge[0][1]][currentEdge[0][0]]+1;				
-					searchProcess.add(currentEdge);//�N�{�ɥت��I�[�J�j���L�{��
+					getSearchProcess().add(currentEdge);//�N�{�ɥت��I�[�J�j���L�{��
 					//�O���{�ɥت��I�����`�I
 					hm.put(tempTarget[0]+":"+tempTarget[1],new int[][]{currentEdge[1],currentEdge[0]});
 					gameView.postInvalidate();
@@ -365,7 +445,7 @@ public class Game {//�t��k���O
 						}						
 					}
 				}
-				pathFlag=true;	
+				setPathFlag(true);	
 				gameView.postInvalidate();
 				Message msg1 = myHandler.obtainMessage(1);
 				myHandler.sendMessage(msg1);//�]�w���s���i�Ω�
@@ -395,7 +475,7 @@ public class Game {//�t��k���O
 					al.add(new int[][]{{start[0],start[1]},{tcol,trow}});
 					hmPath.put(key,al);	
 					//�N�h�L���I�O��			
-					searchProcess.add(new int[][]{{start[0],start[1]},{tcol,trow}});					
+					getSearchProcess().add(new int[][]{{start[0],start[1]},{tcol,trow}});					
 					count++;			
 				}				
 				gameView.postInvalidate();
@@ -450,13 +530,13 @@ public class Game {//�t��k���O
 							length[trow][tcol]=dkPluskj;
 							if(dj==9999){
 								//�N�h�L���I�O��			
-								searchProcess.add(new int[][]{{k[0],k[1]},{tcol,trow}});								
+								getSearchProcess().add(new int[][]{{k[0],k[1]},{tcol,trow}});								
 								count++;
 							}
 						}
 						//�ݬO�_���ت��I
 						if(tcol==target[0]&&trow==target[1]){
-							pathFlag=true;
+							setPathFlag(true);
 							Message msg1 = myHandler.obtainMessage(1);
 							myHandler.sendMessage(msg1);//�]�w���s���i�Ω�
 							Message msg2 = myHandler.obtainMessage(2, count);
@@ -468,5 +548,21 @@ public class Game {//�t��k���O
 				}								
 			}
 		}.start();					
+	}
+
+	public boolean isPathFlag() {
+		return pathFlag;
+	}
+
+	public void setPathFlag(boolean pathFlag) {
+		this.pathFlag = pathFlag;
+	}
+
+	public ArrayList<int[][]> getSearchProcess() {
+		return searchProcess;
+	}
+
+	public void setSearchProcess(ArrayList<int[][]> searchProcess) {
+		this.searchProcess = searchProcess;
 	}
 }

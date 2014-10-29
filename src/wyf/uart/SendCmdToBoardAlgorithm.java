@@ -267,7 +267,7 @@ public class SendCmdToBoardAlgorithm {
 			//SendCommand("bacRig");
 		} else if (dx == 0 && dy == -1) {
 			compass = 180;
-			//SendCommand(inXMPPSet,"backward");
+			SendCommand(inXMPPSet,"backward");
 			//SendCommand("backward");
 		} else if (dx == 1 && dy == -1) {
 			compass = 225;
@@ -286,8 +286,6 @@ public class SendCmdToBoardAlgorithm {
 	public void RobotStart(final GameView gameView , final Game game , final XMPPSetting inXMPPSet)
 	{
 		Log.i("william", "Robot thread running");
-
-		//XMPPSet = inXMPPSet;
 		
 		new Thread() {
 			public void run() {
@@ -295,10 +293,9 @@ public class SendCmdToBoardAlgorithm {
 				if (gameView.algorithmDone == true) { // When user press Start , path cal done
 					int old_dx , old_dy;
 					gameView.drawCircleFlag = true;
-					gameView.setDrawLastCircle(false);
-					gameView.flag = false; // Stop onDraw
-					//PathQueue[size - 1] == Start  . . .  PathQueue[0] == Target
+					gameView.refreshFlag = false; // Stop onDraw
 					
+					//PathQueue[size - 1] == Start  . . .  PathQueue[0] == Target
 					pathQ = gameView.getPathQueue();
 					
 					for (int i = pathQ.size() - 1; i >= 0; i--) {
@@ -361,33 +358,42 @@ public class SendCmdToBoardAlgorithm {
 						//Avoid backward , but robort  turn to forward 
 						if (OriginalCompass == 180 && nextCompass == 180)
 							theta = 180;
-						else if (OriginalCompass == 225 && nextCompass == 225)
-							theta = 180;
-						else if (OriginalCompass == 135 && nextCompass == 135)
-							theta = 180;
-						else if (OriginalCompass == 135 || OriginalCompass == 180 
-								|| OriginalCompass == 225)
-							theta = theta + 180 ;
+						//else if (OriginalCompass == 225 && nextCompass == 225)
+						////	theta = 180;
+						//else if (OriginalCompass == 135 && nextCompass == 135)
+						
+						//	theta = 180;
+						//else if (OriginalCompass == 135 || OriginalCompass == 180 
+						//		|| OriginalCompass == 225)
+						//	theta = theta + 180 ;
 						
 						String dir = FindDirection(theta);
 						SendCommand(inXMPPSet,dir);
 						
 					}
+
+					// Clear Target bitmap 
+					game.target[0] = -1;
+					game.target[1] = -1;
 					
-					//game.target[0] = 1;
-					//game.target[1] = 1;
+					// Set Source location to Target
+					// new start position
+					game.source[0] = nextX;
+					game.source[1] = nextY;
+
+					// Redrawing source and target bitmap position
+					game.setPathFlag(false);
 					
-					game.source[0] = originalX;
-					game.source[1] = originalY;
+					// Clear path line  , when path running done.
+					game.getSearchProcess().clear();
 					
+					// We don't need to draw circle when arrived target.
 					gameView.drawCircleFlag = false;
-					gameView.setDrawLastCircle(true);
-					//gameView.RunThreadTouch(true); // Start update thread
+
 					gameView.postInvalidate();
 					
-					// Set new start position
+					
 
-					gameView.flagR = false;
 
 				}
 			}
