@@ -132,9 +132,10 @@ public class GameView extends View{
 	}
 	
 	
-	
-	public void DrawOrigin(final Canvas canvas){
+	// Draw robot position
+	public void DrawRobotPosition(final Canvas canvas){
 
+		// We get this from our self algorithm
 		int[][] tempA = getPathQueue().get(drawCount);
 		
 		paint.setStyle(Style.FILL);
@@ -145,15 +146,6 @@ public class GameView extends View{
 
 		Log.i(TAG, "Draw Circle X , Y ( " + tempA[0][0] + " " + tempA[0][1]
 				+ " )");
-		// BitmapManager.
-
-		// drawCircleFlag = false;
-		// drawLastCircle = true;
-
-		// postInvalidate();
-		// paint.setColor(Color.WHITE);
-		// canvas.drawCircle(tempA[0][0]*(span+1)+span/2+fixMapData,
-		// tempA[0][1]*(span+1)+span/2+fixMapData, span/2, paint);
 	}
 	
 	protected void onMyDraw(Canvas canvas){
@@ -275,7 +267,7 @@ public class GameView extends View{
 		
 		if (drawCircleFlag == true)
 		{
-			DrawOrigin(canvas);
+			DrawRobotPosition(canvas);
 		}
 		
 	}
@@ -298,7 +290,7 @@ public class GameView extends View{
         	{
         		 for (int i = 0; i < pointerCount; i++) {
         			
-		        	RunThreadTouch(true);
+		        	//RunThreadTouch(true);
 		        	
 		
 					touchX = (int) event.getX();
@@ -318,6 +310,19 @@ public class GameView extends View{
 					//Setting net Target postion
 					MapList.target[0][0] = pos[0];
 					MapList.target[0][1] = pos[1];
+					
+					//Update Target bitmap position
+					postInvalidate();
+					
+					//Log.i(TAG,"Thread ID = " + android.os.Process.myTid());
+					
+					// Avoid thread competition , when user touch 2 points at the same time
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} 
         		 }
         	}
         	
@@ -341,7 +346,7 @@ public class GameView extends View{
         }
         else if (event.getAction() == MotionEvent.ACTION_UP) {
         	//Log.i(TAG," touch up");
-        	RunThreadTouch(false);
+        	//RunThreadTouch(false);
         }
         return true;
 
@@ -418,6 +423,8 @@ public class GameView extends View{
 		return pos;
 	}
 	
+	// Use this thread for update canvas information frequently
+	// We don't use this now. 
 	public class ShowThread implements Runnable {
 
 		int delayTime = 50;
