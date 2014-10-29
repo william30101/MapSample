@@ -144,6 +144,8 @@ public class SetBtnFun {
 						}
 
 					}
+					
+					runBtn.setEnabled(false);
 						
 
 					break;
@@ -318,11 +320,8 @@ public class SetBtnFun {
 							//XMPPSet.XMPPSendText("james1", "stop stop"); // Stop button be pressed.
 						else
 							SendToBoard("direction " + sub);
-							//XMPPSet.XMPPSendText("james1", "direction " + sub);
-						// XMPPSet.XMPPSendText("james1",sub+" test");
-						// sctc.SctpSendData(sub);
-						// comm.setMsg(this.view.getId(), 1);
-						// start(service);
+
+						
 						Thread.sleep(100l);
 					} catch (IOException e) {
 						// TODO Auto-generated catch block

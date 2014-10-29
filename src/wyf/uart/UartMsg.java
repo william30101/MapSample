@@ -123,6 +123,21 @@ public class UartMsg extends wyf.encoder.BaseCmd{
 			}
 
 		} 
+		else if (portName.equals("ttymxc2"))
+		{
+			Log.i(TAG,"ttymxc2 opend");
+			//portName = "ttymxc4";
+			//nanoFd = OpenUart(portName, 1 );
+			nanoFd = OpenUart(portName, 2 );
+			
+			//if (nanoFd > 0) {
+			if (nanoFd > 0) {
+
+				Baud_rate = 2; // 9600
+				SetUart(Baud_rate, 2);
+				fd = nanoFd;
+			}
+		}
 		else
 		{
 			fd = 0;

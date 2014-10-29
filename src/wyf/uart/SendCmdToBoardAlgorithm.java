@@ -14,6 +14,7 @@ public class SendCmdToBoardAlgorithm {
 	
 	//private static XMPPSetting XMPPSet;
 	
+	boolean arduinoDebug = true;
 	int nextX = 0 , nextY = 0;
 	int originalX = 0, originalY = 0;
 	MapList mapList;
@@ -25,19 +26,32 @@ public class SendCmdToBoardAlgorithm {
 	
 		for (int i = 0; i < times; i++) {
 			
-			synchronized (inXMPPSet) {
-			try {
-				inXMPPSet.XMPPSendText("james1", "direction " + inString);
-					
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (!arduinoDebug)
+			{
+				synchronized (inXMPPSet) {
+					try {
+						inXMPPSet.XMPPSendText("james1", "direction " + inString);
+							
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
 			}
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			else
+			{
+				UartMsg.SendMsgUartNano(inString);
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			/*try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -49,134 +63,108 @@ public class SendCmdToBoardAlgorithm {
 		
 	}
 	
-	public void SendCommand(XMPPSetting inXMPPSet,String inString) {
+	
+	
+	public void SendCommand(XMPPSetting inXMPPSet, String inString) {
 		// TODO Auto-generated method stub
-		Log.i(TAG," Send command = " + inString);
-		
-				if (inString.equals("left")) {
-					for (int i = 0; i < 90; i++) {
-		
-						synchronized (inXMPPSet) {
-						try {
-							inXMPPSet.XMPPSendText("james1", "direction " + inString);
-								
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						/*try {
-							Thread.sleep(20);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}*/
-						
-						
-						
-						}
-					}
-					DirectionCorrect(inXMPPSet,inString,10);
-				}
-		
-				if (inString.equals("right")) {
-					for (int i = 0; i < 80; i++) {
+		int loopcount = 0;
+		String correctStr = null;
+		Log.i(TAG, " Send command = " + inString);
 
-						synchronized (inXMPPSet) {
-						try {
-							inXMPPSet.XMPPSendText("james1", "direction " + inString);
-								
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						/*try {
-							Thread.sleep(20);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}*/
-						
-						
-						}
-					}
-					DirectionCorrect(inXMPPSet,inString,10);
-					
+		if (inString.equals("left")) {
+			loopcount = 90;
+			correctStr = inString;
+		}
+		else if (inString.equals("right")) {
+			loopcount = 90;
+			correctStr = inString;
+		} else if (inString.equals("backward")) {
+			loopcount = 13;
+			correctStr = inString;
+		} else if (inString.equals("forward")) {
+			loopcount = 32;
+			correctStr = inString;
+		}
+		// for 45 , 135 , 225 , 315 angle 
+		else {
+			loopcount = 45;
+			if (inString.equals("bacRig") || inString.equals("bacLeft"))
+				correctStr = "backward";
 
-				} else if(inString.equals("backward")){
-					for (int i = 0; i < 13; i++) {
-						synchronized (inXMPPSet) {
-							try {
-								inXMPPSet.XMPPSendText("james1", "direction " + inString);
-									
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					
-						}
+			/*
+			for (int i = 0; i < 45; i++) {
+				synchronized (inXMPPSet) {
+					try {
+						inXMPPSet.XMPPSendText("james1", "direction "
+								+ inString);
+
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
-				}else if (inString.equals("forward"))
-				{
-					for (int i = 0; i < 32; i++) {
-						synchronized (inXMPPSet) {
-							try {
-								inXMPPSet.XMPPSendText("james1", "direction " + inString);
-									
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					
-						}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				}
-				// for 45 angle
-				else
-				{
-					for (int i = 0; i < 45; i++) {
-						synchronized (inXMPPSet) {
-							try {
-								inXMPPSet.XMPPSendText("james1", "direction " + inString);
-									
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-					
-						}
-					}
-					
-					if (inString.equals("bacRig") || inString.equals("bacLeft"))
-						inString = "backward";
-						
-						DirectionCorrect(inXMPPSet,inString,10);
+
 				}
 			}
+
+			if (inString.equals("bacRig") || inString.equals("bacLeft"))
+				inString = "backward";
+
+			DirectionCorrect(inXMPPSet, inString, 10);*/
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		////////////////////////////////////
+		// Send command here .            //
+		///////////////////////////////////
+		for (int i=0;i< loopcount ; i++)
+		{
+			if (!arduinoDebug) {
+	
+				synchronized (inXMPPSet) {
+					try {
+						inXMPPSet.XMPPSendText("james1", "direction "
+								+ inString);
+	
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	
+				}
+			}
+			else
+			{
+				UartMsg.SendMsgUartNano(inString);
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// Correct direction
+		DirectionCorrect(inXMPPSet, inString, 10);
+		
+		
+	}
 	
 	
 	public String FindDirection(int inTheta)

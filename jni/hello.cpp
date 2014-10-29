@@ -201,7 +201,7 @@ extern "C"
 
 	JNIEXPORT jint JNICALL Native_SetUart(JNIEnv *env,jobject mc, jint i,jint fdnum)
 	{
-		int Baud_rate[] = { B19200, B115200};
+		int Baud_rate[] = { B19200, B115200 , B9600};
 		LOGI("Native_SetUart %d", i);
 
 		if (fdnum == 1)
@@ -268,7 +268,6 @@ extern "C"
 
 			if (fdnum == 1)
 			{
-
 				write(driveFd, buf, len);
 			}
 			else if (fdnum == 2)
@@ -296,7 +295,7 @@ extern "C"
 				len = env->GetStringLength(str);
 				write(nanoFd, strBuf, len);
 
-				//LOGI("len = %d",len);
+				LOGI("send to arduino str = %s",strBuf);
 				//LOGI("Write data 3 = %x",strBuf[3]);
 				//LOGI("Write data 4 = %x",strBuf[4]);
 				//LOGI("Write data 5 = %x",strBuf[5]);

@@ -17,6 +17,9 @@ import android.widget.ImageButton;
 
 public class Encoder {
 
+	
+	
+	
 	private static String TAG = "Encoder";
 	
 	private byte[] askEncoderData = {0x53,0x06,0x0d,0x00,0x00,0x45};
@@ -57,6 +60,8 @@ public class Encoder {
 	
 	private byte count = 0x30;
 	
+	boolean arduinoDebug = true;
+	
 	public Encoder (GameView inGV)
 	{
 		StartEncoderThread(); // Start encoder thread now
@@ -93,15 +98,22 @@ public class Encoder {
 		}
 		else if (encoderOpend == false)
 		{
-			if (UartMsg.OpenSetUartPort("ttymxc4") > 0)
+			String openPort = null;
+			if (arduinoDebug)
+				openPort = "ttymxc2";
+			else
+				openPort = "ttymxc4";
+			
+			if (UartMsg.OpenSetUartPort(openPort) > 0)
 			{
-				Log.i(TAG,"Open mxc4 success");
+				Log.i(TAG,"Open " + openPort + " success");
 				encoderOpend = true;
 			
 				handler.postDelayed(rEncoder, encoderWriteWiatInterval + encoderReadWaitInterval);
 				
 				handler.postDelayed(rCombine, combineInterval);
 			}
+			
 		}
 	}
 	

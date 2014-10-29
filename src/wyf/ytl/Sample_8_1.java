@@ -21,7 +21,8 @@ public class Sample_8_1 extends Activity {
 	}; 
 	Spinner mySpinner;		
 	Spinner targetSpinner;	
-	Button goButton;		
+	Button goButton;
+	Button runButton;
 	GameView gameView;		
 	TextView BSTextView;	
 	TextView CDTextView;	
@@ -57,12 +58,13 @@ public class Sample_8_1 extends Activity {
         BSTextView = (TextView)findViewById(R.id.bushu);
         CDTextView = (TextView)findViewById(R.id.changdu);
         goButton = (Button) findViewById(R.id.go);
+        runButton = (Button) findViewById(R.id.runBtn);
         jamesSignButton =  (Button) findViewById(R.id.jamesSignBtn);
         williamSignButton =  (Button) findViewById(R.id.williamSignBtn);
 
         //For demo test
         signin("william1");
-        
+        runButton.setEnabled(false);
         game = new Game();//��l�ƺt��k���O
         //�s�طj���U�ԲM�檺�ҫ�
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, mySpinner_str);
@@ -78,6 +80,7 @@ public class Sample_8_1 extends Activity {
         	new Button.OnClickListener(){
 				public void onClick(View v) {
 					game.runAlgorithm();
+					
 					goButton.setEnabled(false);
 				}
 	        }
@@ -105,9 +108,9 @@ public class Sample_8_1 extends Activity {
             	}
          );
         
-        //gameView.RunThreadTouch(true);
-        
-        encoder = new Encoder(gameView);
+
+        //Start Encoder r/w thread here
+       // encoder = new Encoder(gameView);
         
         williamSignButton.setOnClickListener(onClickListener);
         jamesSignButton.setOnClickListener(onClickListener);
@@ -203,5 +206,6 @@ public class Sample_8_1 extends Activity {
     	game.gameView = this.gameView;
     	game.goButton = this.goButton;
     	game.BSTextView = this.BSTextView;
+    	game.runButton = this.runButton;
     }
 }
