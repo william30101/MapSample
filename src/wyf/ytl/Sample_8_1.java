@@ -110,7 +110,7 @@ public class Sample_8_1 extends Activity {
         
 
         //Start Encoder r/w thread here
-       // encoder = new Encoder(gameView);
+        encoder = new Encoder(gameView);
         
         williamSignButton.setOnClickListener(onClickListener);
         jamesSignButton.setOnClickListener(onClickListener);

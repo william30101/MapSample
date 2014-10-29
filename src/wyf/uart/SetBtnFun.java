@@ -46,6 +46,7 @@ public class SetBtnFun {
 	GameView gameView;
 	Game game;
 	SendCmdToBoardAlgorithm SendAlgo;
+	private boolean arduinoDebug = true;
 	
 	Button runBtn;
 	
@@ -291,7 +292,13 @@ public class SetBtnFun {
 			byte[] cmdByte = uartCmd.GetAllByte(inM);
 			String decoded = new String(cmdByte, "ISO-8859-1");
 			UartMsg.SendMsgUart( 1, cmdByte);
+			//UartMsg.SendMsgUartNano(inStr);
 		}
+	}
+	
+	private void SendToArduino(String inStr) throws IOException
+	{
+		UartMsg.SendMsgUartNano(inStr + "\n");
 	}
 	
 	
@@ -315,11 +322,17 @@ public class SetBtnFun {
 						SendMsg = view.getResources().getResourceName(view.getId());
 						String sub = SendMsg.substring(SendMsg.indexOf("/") + 1);
 						Log.i(TAG, "Send message" + sub);
-						if (sub.equals("stop"))
-							SendToBoard("stop stop");
-							//XMPPSet.XMPPSendText("james1", "stop stop"); // Stop button be pressed.
+						
+						if (!arduinoDebug)
+						{
+							if (sub.equals("stop"))
+								SendToBoard("stop stop");
+								//XMPPSet.XMPPSendText("james1", "stop stop"); // Stop button be pressed.
+							else
+								SendToBoard("direction " + sub);
+						}
 						else
-							SendToBoard("direction " + sub);
+							SendToArduino(sub);
 
 						
 						Thread.sleep(100l);

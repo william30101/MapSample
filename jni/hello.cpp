@@ -166,7 +166,6 @@ extern "C"
 
 	JNIEXPORT jint JNICALL Native_OpenUart(JNIEnv *env,jobject mc, jstring s , jint fdnum)
 	{
-
 		const char *str1 = "/dev/";
 		char *str2 = (char*)env->GetStringUTFChars(s, NULL);
 		char *sall = (char*) malloc(strlen(str1) + strlen(str2) + 1);
@@ -257,51 +256,51 @@ extern "C"
 	}
 
 	JNIEXPORT jint JNICALL Native_SendMsgUart(JNIEnv *env,jobject mc,  jint fdnum , jbyteArray inByte)
+	{
+		int len;
+		jboolean isCopy;
+
+		jbyte* a = env->GetByteArrayElements(inByte,&isCopy);
+		len = env->GetArrayLength(inByte);
+		char *buf = (char*)a;
+
+
+		if (fdnum == 1)
 		{
-			int len;
-			jboolean isCopy;
-
-			jbyte* a = env->GetByteArrayElements(inByte,&isCopy);
-			len = env->GetArrayLength(inByte);
-			char *buf = (char*)a;
-
-
-			if (fdnum == 1)
-			{
-				write(driveFd, buf, len);
-			}
-			else if (fdnum == 2)
-			{
-				write(nanoFd, buf, len);
-			}
-			//LOGI("len = %d",len);
-			//LOGI("Write data 0 = %x",buf[0]);
-			//LOGI("Write data 1 = %x",buf[1]);
-			//LOGI("Write data 2 = %x",buf[2]);
-			//LOGI("Write data 3 = %x",buf[3]);
-			//LOGI("Write data 4 = %x",buf[4]);
-			//LOGI("Write data 5 = %x",buf[5]);
-
-			env->ReleaseByteArrayElements(inByte, a, 0);
+			write(driveFd, buf, len);
 		}
+		else if (fdnum == 2)
+		{
+			write(nanoFd, buf, len);
+		}
+		//LOGI("len = %d",len);
+		//LOGI("Write data 0 = %x",buf[0]);
+		//LOGI("Write data 1 = %x",buf[1]);
+		//LOGI("Write data 2 = %x",buf[2]);
+		//LOGI("Write data 3 = %x",buf[3]);
+		//LOGI("Write data 4 = %x",buf[4]);
+		//LOGI("Write data 5 = %x",buf[5]);
+
+		env->ReleaseByteArrayElements(inByte, a, 0);
+	}
 
 
 	JNIEXPORT jint JNICALL Native_SendMsgUartNano(JNIEnv *env,jobject mc, jstring str)
-			{
-				int len;
-				const char *strBuf;
+	{
+		int len;
+		const char *strBuf;
 
-				strBuf = env->GetStringUTFChars(str, NULL);
-				len = env->GetStringLength(str);
-				write(nanoFd, strBuf, len);
+		strBuf = env->GetStringUTFChars(str, NULL);
+		len = env->GetStringLength(str);
+		write(nanoFd, strBuf, len);
 
-				LOGI("send to arduino str = %s",strBuf);
-				//LOGI("Write data 3 = %x",strBuf[3]);
-				//LOGI("Write data 4 = %x",strBuf[4]);
-				//LOGI("Write data 5 = %x",strBuf[5]);
+		LOGI("send to arduino str = %s",strBuf);
+		//LOGI("Write data 3 = %x",strBuf[3]);
+		//LOGI("Write data 4 = %x",strBuf[4]);
+		//LOGI("Write data 5 = %x",strBuf[5]);
 
-				env->ReleaseStringUTFChars(str, strBuf);
-			}
+		env->ReleaseStringUTFChars(str, strBuf);
+	}
 
 	JNIEXPORT jstring JNICALL Native_ReceiveMsgUart(JNIEnv *env,jobject mc, jint fdnum)
 	{

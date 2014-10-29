@@ -133,7 +133,7 @@ public class UartMsg extends wyf.encoder.BaseCmd{
 			//if (nanoFd > 0) {
 			if (nanoFd > 0) {
 
-				Baud_rate = 2; // 9600
+				Baud_rate = 2; // 115200
 				SetUart(Baud_rate, 2);
 				fd = nanoFd;
 			}

@@ -109,9 +109,9 @@ public class Encoder {
 				Log.i(TAG,"Open " + openPort + " success");
 				encoderOpend = true;
 			
-				handler.postDelayed(rEncoder, encoderWriteWiatInterval + encoderReadWaitInterval);
+				//handler.postDelayed(rEncoder, encoderWriteWiatInterval + encoderReadWaitInterval);
 				
-				handler.postDelayed(rCombine, combineInterval);
+				//handler.postDelayed(rCombine, combineInterval);
 			}
 			
 		}

@@ -45,7 +45,7 @@ public class SendCmdToBoardAlgorithm {
 			}
 			else
 			{
-				UartMsg.SendMsgUartNano(inString);
+				UartMsg.SendMsgUartNano(inString + "\n");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -150,7 +150,7 @@ public class SendCmdToBoardAlgorithm {
 			}
 			else
 			{
-				UartMsg.SendMsgUartNano(inString);
+				UartMsg.SendMsgUartNano(inString + "\n");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
