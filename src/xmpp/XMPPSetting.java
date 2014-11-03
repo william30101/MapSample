@@ -23,7 +23,7 @@ public class XMPPSetting {
 
 	private static XMPPConnection connection;
 	private UartMsg UCmd = new UartMsg();
-	private boolean LogSuc = false;
+	private boolean LogSuc = false , arduinoDbg = true;
 
 	//public XMPPSetting(ScreenAV xmppClient)
 	public XMPPSetting()
@@ -91,12 +91,17 @@ public class XMPPSetting {
 		                
 		                String[] inM = message.getBody().split("\\s+");
 						try {
-							byte[] cmdByte = UCmd.GetAllByte(inM);
-							Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" + " Func num = " + cmdByte[1] + " Direc = " + cmdByte[2]);
-							//Do JNI here , We got correct data format here.
-							String decoded = new String(cmdByte, "ISO-8859-1");
-							UCmd.SendMsgUart(1,cmdByte);
-
+							if (!arduinoDbg)
+							{
+								byte[] cmdByte = UCmd.GetAllByte(inM);
+								Log.i(TAG, "Got text [" + message.getBody() + "] from [" + fromName + "]" + " Func num = " + cmdByte[1] + " Direc = " + cmdByte[2]);
+								//Do JNI here , We got correct data format here.
+								String decoded = new String(cmdByte, "ISO-8859-1");
+								UCmd.SendMsgUart(1,cmdByte);
+							}
+							else
+								UCmd.SendMsgUartNano(message.getBody());
+							
 							
 							
 						} catch (IOException e) {

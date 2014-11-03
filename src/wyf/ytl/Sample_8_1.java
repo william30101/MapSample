@@ -63,7 +63,7 @@ public class Sample_8_1 extends Activity {
         williamSignButton =  (Button) findViewById(R.id.williamSignBtn);
 
         //For demo test
-        signin("william1");
+        //signin("william1");
         runButton.setEnabled(false);
         game = new Game();//��l�ƺt��k���O
         //�s�طj���U�ԲM�檺�ҫ�

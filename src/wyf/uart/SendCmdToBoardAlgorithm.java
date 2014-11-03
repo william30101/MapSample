@@ -45,7 +45,8 @@ public class SendCmdToBoardAlgorithm {
 			}
 			else
 			{
-				UartMsg.SendMsgUartNano(inString + "\n");
+				//UartMsg.SendMsgUartNano(inString + "\n");
+				inXMPPSet.XMPPSendText("james1", inString + "\n");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -150,7 +151,8 @@ public class SendCmdToBoardAlgorithm {
 			}
 			else
 			{
-				UartMsg.SendMsgUartNano(inString + "\n");
+				//UartMsg.SendMsgUartNano(inString + "\n");
+				inXMPPSet.XMPPSendText("james1", inString + "\n");
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {

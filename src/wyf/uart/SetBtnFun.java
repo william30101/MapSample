@@ -256,7 +256,8 @@ public class SetBtnFun {
 
 					isNeedAdd = false;
 				try {
-					SendToBoard("stop stop");
+					if (!arduinoDebug)
+						SendToBoard("stop stop");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -298,7 +299,8 @@ public class SetBtnFun {
 	
 	private void SendToArduino(String inStr) throws IOException
 	{
-		UartMsg.SendMsgUartNano(inStr + "\n");
+		//UartMsg.SendMsgUartNano(inStr + "\n");
+		SendToBoard(inStr + "\n");
 	}
 	
 	
@@ -332,7 +334,9 @@ public class SetBtnFun {
 								SendToBoard("direction " + sub);
 						}
 						else
-							SendToArduino(sub);
+						{
+							SendToBoard(sub+"\n");
+						}
 
 						
 						Thread.sleep(100l);
